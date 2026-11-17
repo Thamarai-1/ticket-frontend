@@ -1,4 +1,5 @@
 import React from 'react';
+import { X } from 'lucide-react';
 
 const formatFullDate = (dateStr) => {
   if (!dateStr) return 'N/A';
@@ -39,8 +40,8 @@ export default function TicketDetailModal({ ticket, onClose }) {
               {ticket.title}
             </h2>
           </div>
-          <button className="modal-close-btn" onClick={onClose}>
-            ✕
+          <button className="modal-close-btn" onClick={onClose} aria-label="Close">
+            <X size={18} />
           </button>
         </div>
 
@@ -51,17 +52,19 @@ export default function TicketDetailModal({ ticket, onClose }) {
 
         {ticket.resolution_text && (
           <div className="modal-section">
-            <div className="modal-label" style={{ color: 'var(--success)' }}>
+            <div className="modal-label" style={{ color: '#09090b' }}>
               Historical Resolution Steps
             </div>
             <div
               style={{
-                background: 'rgba(16, 185, 129, 0.08)',
-                border: '1px solid rgba(16, 185, 129, 0.25)',
+                background: '#f4f4f5',
+                border: '1px solid #e4e4e7',
+                borderLeft: '3px solid #09090b',
                 borderRadius: 'var(--radius-sm)',
                 padding: '0.85rem',
                 fontSize: '0.9rem',
-                lineHeight: 1.6
+                lineHeight: 1.6,
+                color: '#09090b'
               }}
             >
               {ticket.resolution_text}

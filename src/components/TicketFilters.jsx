@@ -1,4 +1,5 @@
 import React from 'react';
+import { RotateCcw } from 'lucide-react';
 
 const CATEGORIES = [
   'Network',
@@ -87,8 +88,9 @@ export default function TicketFilters({
         </div>
 
         <div className="input-group" style={{ alignSelf: 'flex-end' }}>
-          <button className="btn-secondary" onClick={onReset}>
-            Reset Filters
+          <button className="btn-secondary" onClick={onReset} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <RotateCcw size={13} />
+            <span>Reset Filters</span>
           </button>
         </div>
       </div>

@@ -1,4 +1,13 @@
 import React, { useState } from 'react';
+import {
+  LayoutDashboard,
+  Layers,
+  Tags,
+  Database,
+  History,
+  ShieldCheck,
+  Ticket
+} from 'lucide-react';
 import AnalystDashboard from './components/AnalystDashboard';
 import SimilarTickets from './components/SimilarTickets';
 import TicketClassifier from './components/TicketClassifier';
@@ -7,135 +16,113 @@ import AnalysisHistory from './components/AnalysisHistory';
 import AuditLogViewer from './components/AuditLogViewer';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('dashboard'); // Default to Unified Analyst Console
+  const [activeTab, setActiveTab] = useState('dashboard');
+
+  const navItems = [
+    { id: 'dashboard', label: 'Analyst Console', icon: LayoutDashboard },
+    { id: 'similar', label: 'Similar Incidents', icon: Layers },
+    { id: 'classifier', label: 'Ticket Classifier', icon: Tags },
+    { id: 'historical', label: 'Ticket Repository', icon: Database },
+    { id: 'history', label: 'Analysis History', icon: History },
+    { id: 'audit', label: 'Audit Trail', icon: ShieldCheck }
+  ];
+
+  const currentNav = navItems.find(item => item.id === activeTab) || navItems[0];
 
   return (
-    <div className="container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <header className="app-header" style={{ marginBottom: '1.25rem' }}>
-        <div className="brand-wrapper">
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <h1 className="brand-title">Intelligent IT Ticket Assistant</h1>
-              <span className="brand-badge" style={{ background: '#22c55e', color: '#fff' }}>Phases 1–6 Operational</span>
+    <div className="app-layout">
+      {/* Left Sidebar */}
+      <aside className="sidebar">
+        {/* Brand Header */}
+        <div className="sidebar-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+            <div style={{
+              width: '26px',
+              height: '26px',
+              background: '#09090b',
+              color: '#ffffff',
+              borderRadius: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}>
+              <Ticket size={15} />
             </div>
-            <p className="brand-subtitle">
-              Unified Classification, Hybrid Retrieval, Grounded Resolution Recommendations &amp; Audit Trail — HCLTech Hackathon
-            </p>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: '#09090b', letterSpacing: '-0.01em' }}>
+              IT Ticket Assistant
+            </span>
           </div>
         </div>
 
-        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', textAlign: 'right' }}>
-          <div>Stack: React + Express + FastAPI + MongoDB</div>
-          <div style={{ color: 'var(--success)' }}>● All 6 Phases End-to-End Integrated</div>
+        {/* Navigation Items */}
+        <div className="sidebar-nav">
+          <div style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            color: '#71717a',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            padding: '4px 8px 8px 8px'
+          }}>
+            Navigation
+          </div>
+          <nav style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+            {navItems.map((item) => {
+              const isActive = activeTab === item.id;
+              const Icon = item.icon;
+              return (
+                <button
+                  key={item.id}
+                  className={`sidebar-link ${isActive ? 'active' : ''}`}
+                  onClick={() => setActiveTab(item.id)}
+                >
+                  <Icon size={16} color={isActive ? '#ffffff' : '#71717a'} />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </nav>
         </div>
-      </header>
+      </aside>
 
-      {/* Primary Tab Navigation */}
-      <div style={{
-        display: 'flex',
-        gap: '0.6rem',
-        marginBottom: '1.5rem',
-        borderBottom: '1px solid var(--border-color)',
-        paddingBottom: '0.75rem',
-        flexWrap: 'wrap'
-      }}>
-        <button
-          className="btn-secondary"
-          style={{
-            background: activeTab === 'dashboard' ? '#2563eb' : '#334155',
-            color: '#fff',
-            fontWeight: activeTab === 'dashboard' ? 700 : 400,
-            borderRadius: '6px',
-            padding: '8px 14px'
-          }}
-          onClick={() => setActiveTab('dashboard')}
-        >
-          🚀 Unified Analyst Console (Phases 4 &amp; 5)
-        </button>
+      {/* Main Content Area */}
+      <div className="main-layout">
+        {/* Top Header / Breadcrumb */}
+        <header className="top-navbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '13px', color: '#71717a' }}>Workspace /</span>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#09090b' }}>
+              {currentNav.label}
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#71717a' }}>
+            <span>Incident Intelligence &amp; Resolution</span>
+          </div>
+        </header>
 
-        <button
-          className="btn-secondary"
-          style={{
-            background: activeTab === 'similar' ? '#2563eb' : '#334155',
-            color: '#fff',
-            fontWeight: activeTab === 'similar' ? 700 : 400,
-            borderRadius: '6px',
-            padding: '8px 14px'
-          }}
-          onClick={() => setActiveTab('similar')}
-        >
-          🔍 Similar Incidents &amp; Duplicates (Phase 3)
-        </button>
+        {/* Rightside Scrollable Viewport */}
+        <div className="main-scroll-container">
+          <main className="main-content">
+            {activeTab === 'dashboard' && <AnalystDashboard />}
+            {activeTab === 'similar' && <SimilarTickets />}
+            {activeTab === 'classifier' && <TicketClassifier />}
+            {activeTab === 'historical' && <HistoricalTickets />}
+            {activeTab === 'history' && <AnalysisHistory />}
+            {activeTab === 'audit' && <AuditLogViewer />}
+          </main>
 
-        <button
-          className="btn-secondary"
-          style={{
-            background: activeTab === 'classifier' ? '#2563eb' : '#334155',
-            color: '#fff',
-            fontWeight: activeTab === 'classifier' ? 700 : 400,
-            borderRadius: '6px',
-            padding: '8px 14px'
-          }}
-          onClick={() => setActiveTab('classifier')}
-        >
-          🤖 AI Ticket Classifier (Phase 2)
-        </button>
-
-        <button
-          className="btn-secondary"
-          style={{
-            background: activeTab === 'historical' ? '#2563eb' : '#334155',
-            color: '#fff',
-            fontWeight: activeTab === 'historical' ? 700 : 400,
-            borderRadius: '6px',
-            padding: '8px 14px'
-          }}
-          onClick={() => setActiveTab('historical')}
-        >
-          📁 Ticket Repository &amp; Search (Phase 1)
-        </button>
-
-        <button
-          className="btn-secondary"
-          style={{
-            background: activeTab === 'history' ? '#2563eb' : '#334155',
-            color: '#fff',
-            fontWeight: activeTab === 'history' ? 700 : 400,
-            borderRadius: '6px',
-            padding: '8px 14px'
-          }}
-          onClick={() => setActiveTab('history')}
-        >
-          📜 Past Analyses (Phase 5)
-        </button>
-
-        <button
-          className="btn-secondary"
-          style={{
-            background: activeTab === 'audit' ? '#2563eb' : '#334155',
-            color: '#fff',
-            fontWeight: activeTab === 'audit' ? 700 : 400,
-            borderRadius: '6px',
-            padding: '8px 14px'
-          }}
-          onClick={() => setActiveTab('audit')}
-        >
-          🛡️ Compliance Audit Trail (FR-08)
-        </button>
+          <footer style={{
+            padding: '1rem 1.75rem',
+            borderTop: '1px solid var(--border-color)',
+            fontSize: '0.8rem',
+            color: 'var(--text-muted)',
+            textAlign: 'center',
+            background: '#ffffff'
+          }}>
+            IT Service Management Console • Ticket Intelligence System
+          </footer>
+        </div>
       </div>
-
-      <main style={{ flex: 1 }}>
-        {activeTab === 'dashboard' && <AnalystDashboard />}
-        {activeTab === 'similar' && <SimilarTickets />}
-        {activeTab === 'classifier' && <TicketClassifier />}
-        {activeTab === 'historical' && <HistoricalTickets />}
-        {activeTab === 'history' && <AnalysisHistory />}
-        {activeTab === 'audit' && <AuditLogViewer />}
-      </main>
-
-      <footer style={{ marginTop: '2.5rem', padding: '1rem 0', borderTop: '1px solid var(--border-color)', textAlign: 'center', fontSize: '0.8rem', color: '#64748b' }}>
-        HCLTech Future Ready AI Engineer Hackathon | Intelligent IT Ticket Analysis and Resolution Assistant | All 6 Phases Complete &amp; Validated
-      </footer>
     </div>
   );
 }

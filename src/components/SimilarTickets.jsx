@@ -1,44 +1,15 @@
 import React, { useState } from 'react';
+import {
+  Search,
+  AlertTriangle,
+  ArrowRight,
+  Clock,
+  Layers,
+  SlidersHorizontal,
+  Info
+} from 'lucide-react';
 import { fetchSimilarTickets } from '../services/api';
 import TicketDetailModal from './TicketDetailModal';
-
-const PRESET_QUERIES = [
-  {
-    name: 'VPN Dropout',
-    title: 'VPN connection disconnects right after MFA',
-    description: 'User enters credentials on GlobalProtect. The VPN disconnects with Error 800 on gateway 10.240.0.1 after 30 seconds.',
-    service: 'Corporate VPN',
-    env: 'Production'
-  },
-  {
-    name: 'Account Lockout',
-    title: 'User account locked out in Active Directory repeatedly',
-    description: 'Employee account locked out with Event ID 4625 originating from workstation WS-1049 badpwdcount incrementing.',
-    service: 'Active Directory Domain Services',
-    env: 'Production'
-  },
-  {
-    name: 'CAD 0x80070005',
-    title: 'AutoCAD deployment fails with error 0x80070005 access denied',
-    description: 'Installer fails during staging directory extraction in C:\\Windows\\Temp via Company Portal Intune.',
-    service: 'Endpoint Management (Intune)',
-    env: 'Production'
-  },
-  {
-    name: '502 Bad Gateway',
-    title: 'Nginx reverse proxy returning HTTP 502 Bad Gateway to clients',
-    description: 'API gateway web-gw-prod01 returning 502. Upstream connection refused on socket 127.0.0.1:8080.',
-    service: 'Linux Application Cluster',
-    env: 'Production'
-  },
-  {
-    name: 'Printer Jam',
-    title: 'Floor 3 HP LaserJet printer paper jam 13.00.00',
-    description: 'Shared printer PRN-FL3-COLOR displays error code 13.00.00 paper jam inside top cover.',
-    service: 'Print Server Services',
-    env: 'Production'
-  }
-];
 
 export default function SimilarTickets() {
   const [title, setTitle] = useState('');
@@ -78,7 +49,7 @@ export default function SimilarTickets() {
         setResultsData(response.data);
       } else if (response.fallback) {
         setResultsData(response.fallback);
-        setError(`ML Service Notice: ${response.error || 'Retrieval service offline'}`);
+        setError(`Service Notice: ${response.error || 'Retrieval service offline'}`);
       }
     } catch (err) {
       setError(err.message || 'Failed to retrieve similar historical tickets.');
@@ -87,41 +58,16 @@ export default function SimilarTickets() {
     }
   };
 
-  const loadPreset = (preset) => {
-    setTitle(preset.title);
-    setDescription(preset.description);
-    setAffectedService(preset.service);
-    setEnvironment(preset.env);
-    setError(null);
-    setResultsData(null);
-  };
-
   return (
-    <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
-      {/* Header Banner */}
+    <div style={{ maxWidth: '1100px', margin: '0 auto', color: '#09090b' }}>
+      {/* Header */}
       <div style={{ marginBottom: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.4rem', fontWeight: 700 }}>Semantic Similarity &amp; Duplicate Detection</h2>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
-          Hybrid Information Retrieval combining Sentence Transformers (FAISS IndexFlatIP) and BM25 with Reciprocal Rank Fusion (RRF).
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '0 0 4px 0', color: '#09090b' }}>
+          Semantic Similarity &amp; Duplicate Detection
+        </h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: 0 }}>
+          Hybrid retrieval combining vector embeddings (FAISS) and lexical matching (BM25) with Reciprocal Rank Fusion.
         </p>
-      </div>
-
-      {/* Preset Buttons */}
-      <div style={{ marginBottom: '1.25rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem', alignItems: 'center' }}>
-        <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-          Test Scenarios:
-        </span>
-        {PRESET_QUERIES.map((preset, idx) => (
-          <button
-            key={idx}
-            type="button"
-            className="btn-secondary"
-            style={{ fontSize: '0.75rem', padding: '0.25rem 0.65rem' }}
-            onClick={() => loadPreset(preset)}
-          >
-            {preset.name}
-          </button>
-        ))}
       </div>
 
       {/* Query Formulation Form */}
@@ -214,15 +160,20 @@ export default function SimilarTickets() {
               type="submit"
               className="btn-secondary"
               style={{
-                background: 'var(--accent-primary)',
-                color: '#fff',
+                background: '#09090b',
+                color: '#ffffff',
                 fontWeight: 600,
-                padding: '0.65rem 1.5rem',
-                border: 'none'
+                padding: '0.6rem 1.4rem',
+                border: '1px solid #09090b',
+                borderRadius: '6px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '7px'
               }}
               disabled={loading}
             >
-              {loading ? 'Searching Vectors & Inverted Index...' : 'Find Similar Historical Tickets'}
+              <Search size={14} />
+              <span>{loading ? 'Searching Vectors...' : 'Find Similar Incidents'}</span>
             </button>
           </div>
         </form>
@@ -231,14 +182,15 @@ export default function SimilarTickets() {
       {/* Error Alert */}
       {error && (
         <div className="alert-box alert-error" style={{ marginBottom: '1.5rem' }}>
-          <strong>Notice: </strong> {error}
+          <AlertTriangle size={15} />
+          <span><strong>Notice:</strong> {error}</span>
         </div>
       )}
 
       {/* Loading Indicator */}
       {loading && (
         <div className="table-container loading-spinner" style={{ marginBottom: '1.5rem' }}>
-          <span>Querying FAISS IndexFlatIP &amp; BM25 with Reciprocal Rank Fusion...</span>
+          <span>Querying vector and lexical indexes with Reciprocal Rank Fusion...</span>
         </div>
       )}
 
@@ -246,11 +198,14 @@ export default function SimilarTickets() {
       {resultsData && (
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 600 }}>
+            <h3 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#09090b' }}>
               Similar Historical Tickets ({resultsData.results?.length || 0} retrieved)
             </h3>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
-              Method: {resultsData.retrieval_method} | Engine: {resultsData.retrieval_model_version} | ⚡ {resultsData.retrieval_latency_ms} ms
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <span>Method: {resultsData.retrieval_method} | Engine: {resultsData.retrieval_model_version}</span>
+              <span style={{ margin: '0 4px' }}>•</span>
+              <Clock size={12} />
+              <span>{resultsData.retrieval_latency_ms} ms</span>
             </span>
           </div>
 
@@ -260,26 +215,27 @@ export default function SimilarTickets() {
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Try broadening your search description or adjusting filters.</p>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
               {resultsData.results.map((item) => (
                 <div
                   key={item.ticket_id}
                   className="filter-card"
                   style={{
-                    borderColor: item.potential_duplicate ? 'rgba(239, 68, 68, 0.5)' : 'var(--border-color)',
-                    transition: 'all 0.15s ease'
+                    borderColor: item.potential_duplicate ? '#09090b' : 'var(--border-color)',
+                    padding: '14px 16px',
+                    marginBottom: 0
                   }}
                 >
                   {/* Top Bar with Badges */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-                      <span className="brand-badge" style={{ background: 'rgba(59, 130, 246, 0.15)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.65rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                      <span className="brand-badge" style={{ background: '#f4f4f5', color: '#09090b', border: '1px solid #d4d4d8', fontSize: '11px', padding: '1px 6px' }}>
                         Rank #{item.hybrid_rank}
                       </span>
-                      <span className="ticket-id" style={{ fontSize: '1.05rem' }}>
+                      <span className="ticket-id" style={{ fontSize: '1rem', color: '#09090b' }}>
                         {item.ticket_id}
                       </span>
-                      <span className="badge" style={{ background: 'rgba(148, 163, 184, 0.15)', color: '#cbd5e1' }}>
+                      <span className="badge" style={{ background: '#f4f4f5', color: '#52525b', border: '1px solid #e4e4e7' }}>
                         {item.category} / {item.subcategory}
                       </span>
                       <span className="badge badge-status-resolved">
@@ -293,31 +249,36 @@ export default function SimilarTickets() {
                         <span
                           className="badge"
                           style={{
-                            background: 'rgba(239, 68, 68, 0.15)',
-                            color: 'var(--danger)',
-                            border: '1px solid rgba(239, 68, 68, 0.4)',
-                            fontWeight: 700
+                            background: '#09090b',
+                            color: '#ffffff',
+                            border: '1px solid #09090b',
+                            fontWeight: 600,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
                           }}
                         >
-                          ⚠️ Potential Duplicate ({(item.duplicate_confidence * 100).toFixed(0)}%)
+                          <AlertTriangle size={11} />
+                          <span>Duplicate ({(item.duplicate_confidence * 100).toFixed(0)}%)</span>
                         </span>
                       )}
 
                       <button
                         className="btn-secondary"
-                        style={{ fontSize: '0.75rem', padding: '0.25rem 0.65rem' }}
+                        style={{ fontSize: '0.75rem', padding: '0.25rem 0.65rem', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
                         onClick={() => setSelectedTicket(item)}
                       >
-                        View Full Details →
+                        <span>Details</span>
+                        <ArrowRight size={12} />
                       </button>
                     </div>
                   </div>
 
                   {/* Title & Description Excerpt */}
-                  <h4 style={{ fontSize: '1.05rem', fontWeight: 600, marginBottom: '0.35rem' }}>
+                  <h4 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.35rem', color: '#09090b' }}>
                     {item.title}
                   </h4>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '0.85rem' }}>
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5, marginBottom: '0.75rem' }}>
                     {item.description_excerpt}
                   </p>
 
@@ -325,16 +286,20 @@ export default function SimilarTickets() {
                   {item.potential_duplicate && item.duplicate_reason && (
                     <div
                       style={{
-                        background: 'rgba(239, 68, 68, 0.08)',
-                        border: '1px solid rgba(239, 68, 68, 0.25)',
+                        background: '#f4f4f5',
+                        border: '1px solid #09090b',
                         borderRadius: 'var(--radius-sm)',
-                        padding: '0.65rem 0.85rem',
+                        padding: '0.55rem 0.8rem',
                         fontSize: '0.8rem',
-                        color: '#fca5a5',
-                        marginBottom: '0.85rem'
+                        color: '#09090b',
+                        marginBottom: '0.75rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
                       }}
                     >
-                      <strong>Duplicate Signals: </strong> {item.duplicate_reason}
+                      <AlertTriangle size={13} />
+                      <span><strong>Duplicate Signals:</strong> {item.duplicate_reason}</span>
                     </div>
                   )}
 
@@ -347,23 +312,24 @@ export default function SimilarTickets() {
                       flexWrap: 'wrap',
                       gap: '0.75rem',
                       fontSize: '0.8rem',
-                      background: 'var(--bg-primary)',
-                      padding: '0.5rem 0.75rem',
+                      background: '#f4f4f5',
+                      padding: '0.45rem 0.75rem',
                       borderRadius: 'var(--radius-sm)',
-                      border: '1px solid var(--border-color)'
+                      border: '1px solid var(--border-color)',
+                      color: '#09090b'
                     }}
                   >
                     <div>
                       <span style={{ color: 'var(--text-muted)' }}>Match Evidence: </span>
-                      <span style={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                      <span style={{ color: '#09090b', fontWeight: 500 }}>
                         {item.match_reason}
                       </span>
                     </div>
 
                     <div style={{ display: 'flex', gap: '0.85rem', fontFamily: 'var(--font-mono)' }}>
-                      <span>Semantic: <strong style={{ color: 'var(--success)' }}>{(item.similarity_score * 100).toFixed(1)}%</strong></span>
-                      <span>BM25: <strong>{item.bm25_score}</strong></span>
-                      <span>RRF: <strong style={{ color: 'var(--accent-primary)' }}>{item.rrf_score}</strong></span>
+                      <span>Semantic: <strong style={{ color: '#09090b' }}>{(item.similarity_score * 100).toFixed(1)}%</strong></span>
+                      <span>BM25: <strong style={{ color: '#09090b' }}>{item.bm25_score}</strong></span>
+                      <span>RRF: <strong style={{ color: '#09090b' }}>{item.rrf_score}</strong></span>
                     </div>
                   </div>
                 </div>
