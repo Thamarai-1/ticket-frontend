@@ -1,4 +1,10 @@
 import React from 'react';
+import {
+  FolderOpen,
+  CheckCircle2,
+  AlertTriangle,
+  Clock
+} from 'lucide-react';
 
 export default function TicketStatsBanner({ stats, loading }) {
   if (loading && !stats) {
@@ -8,7 +14,7 @@ export default function TicketStatsBanner({ stats, loading }) {
           <div key={i} className="stat-card" style={{ opacity: 0.6 }}>
             <div className="stat-header">Loading Metrics...</div>
             <div className="stat-value">--</div>
-            <div className="stat-subtext">Fetching MongoDB aggregates</div>
+            <div className="stat-subtext">Fetching aggregates</div>
           </div>
         ))}
       </div>
@@ -29,18 +35,18 @@ export default function TicketStatsBanner({ stats, loading }) {
       <div className="stat-card">
         <div className="stat-header">
           <span>Total Tickets</span>
-          <span>📁</span>
+          <FolderOpen size={16} color="#71717a" />
         </div>
         <div className="stat-value">{total}</div>
-        <div className="stat-subtext">Historical verified repository</div>
+        <div className="stat-subtext">Verified incident repository</div>
       </div>
 
       <div className="stat-card">
         <div className="stat-header">
           <span>Resolution Rate</span>
-          <span>✅</span>
+          <CheckCircle2 size={16} color="#09090b" />
         </div>
-        <div className="stat-value" style={{ color: 'var(--success)' }}>
+        <div className="stat-value" style={{ color: '#09090b' }}>
           {resolvedPct}%
         </div>
         <div className="stat-subtext">{resolved} closed or resolved</div>
@@ -49,9 +55,9 @@ export default function TicketStatsBanner({ stats, loading }) {
       <div className="stat-card">
         <div className="stat-header">
           <span>Critical P1 Incidents</span>
-          <span>🚨</span>
+          <AlertTriangle size={16} color="#09090b" />
         </div>
-        <div className="stat-value" style={{ color: 'var(--danger)' }}>
+        <div className="stat-value" style={{ color: '#09090b' }}>
           {p1Count}
         </div>
         <div className="stat-subtext">High-severity outage tickets</div>
@@ -60,9 +66,9 @@ export default function TicketStatsBanner({ stats, loading }) {
       <div className="stat-card">
         <div className="stat-header">
           <span>Active Backlog</span>
-          <span>⏳</span>
+          <Clock size={16} color="#71717a" />
         </div>
-        <div className="stat-value" style={{ color: 'var(--warning)' }}>
+        <div className="stat-value" style={{ color: '#09090b' }}>
           {unresolved}
         </div>
         <div className="stat-subtext">New, assigned, or in-progress</div>

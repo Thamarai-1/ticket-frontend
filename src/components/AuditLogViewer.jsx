@@ -1,9 +1,10 @@
 /**
  * AuditLogViewer.jsx
- * Immutable Compliance Audit Trail Viewer (FR-08 Audit-Friendly Output).
+ * Compliance Audit Trail Viewer.
  */
 
 import React, { useState, useEffect } from 'react';
+import { ShieldCheck, RotateCcw, Filter } from 'lucide-react';
 import { fetchAuditLogs } from '../services/api';
 
 const EVENT_TYPES = [
@@ -46,85 +47,146 @@ export default function AuditLogViewer() {
   };
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 0 20px 0', color: '#09090b' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
         <div>
-          <h2 style={{ margin: '0 0 4px 0', fontSize: '20px' }}>🛡️ Enterprise Compliance Audit Trail (FR-08)</h2>
-          <p style={{ margin: 0, color: '#64748b', fontSize: '13px' }}>
-            Immutable, cryptographically correlated audit records tracing every AI inference and analyst decision.
+          <h2 style={{
+            margin: '0 0 4px 0',
+            fontSize: '18px',
+            fontWeight: 700,
+            color: '#09090b',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <ShieldCheck size={18} />
+            <span>Compliance Audit Trail</span>
+          </h2>
+          <p style={{ margin: 0, color: '#71717a', fontSize: '13px' }}>
+            Correlated audit records tracing model inference, recommendations, and analyst actions.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <label style={{ fontSize: '13px', fontWeight: 600 }}>Filter Event:</label>
+          <label style={{ fontSize: '12px', fontWeight: 600, color: '#09090b' }}>Filter Event:</label>
           <select
             value={eventTypeFilter}
             onChange={e => { setEventTypeFilter(e.target.value); setPage(1); }}
-            style={{ padding: '6px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+            style={{
+              padding: '5px 10px',
+              borderRadius: '6px',
+              border: '1px solid #d4d4d8',
+              background: '#ffffff',
+              color: '#09090b',
+              fontSize: '13px'
+            }}
           >
             {EVENT_TYPES.map((t, i) => <option key={i} value={t}>{t}</option>)}
           </select>
           <button
             onClick={loadLogs}
-            style={{ background: '#f8fafc', border: '1px solid #cbd5e1', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' }}
+            style={{
+              background: '#ffffff',
+              border: '1px solid #d4d4d8',
+              color: '#09090b',
+              padding: '6px 12px',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontWeight: 500,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
           >
-            🔄 Refresh
+            <RotateCcw size={13} />
+            <span>Refresh</span>
           </button>
         </div>
       </div>
 
       {error && (
-        <div style={{ padding: '12px', background: '#fee2e2', color: '#991b1b', borderRadius: '6px', marginBottom: '16px' }}>
+        <div style={{
+          padding: '12px',
+          background: '#f4f4f5',
+          border: '1px solid #09090b',
+          color: '#09090b',
+          borderRadius: '6px',
+          marginBottom: '16px',
+          fontSize: '13px'
+        }}>
           {error}
         </div>
       )}
 
       {loading ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: '#64748b' }}>Loading compliance audit records...</div>
+        <div style={{ padding: '40px', textAlign: 'center', color: '#71717a' }}>Loading compliance audit records...</div>
       ) : logs.length === 0 ? (
-        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '36px', textAlign: 'center', color: '#64748b' }}>
+        <div style={{
+          background: '#ffffff',
+          border: '1px solid #e4e4e7',
+          borderRadius: '8px',
+          padding: '36px',
+          textAlign: 'center',
+          color: '#71717a'
+        }}>
           No audit records found matching criteria.
         </div>
       ) : (
-        <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden' }}>
+        <div style={{
+          background: '#ffffff',
+          border: '1px solid #e4e4e7',
+          borderRadius: '8px',
+          overflow: 'hidden'
+        }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px', textAlign: 'left' }}>
-            <thead style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+            <thead style={{ background: '#f4f4f5', borderBottom: '1px solid #e4e4e7' }}>
               <tr>
-                <th style={{ padding: '12px 14px' }}>Event ID</th>
-                <th style={{ padding: '12px 14px' }}>Event Type</th>
-                <th style={{ padding: '12px 14px' }}>Correlation ID</th>
-                <th style={{ padding: '12px 14px' }}>Analysis ID</th>
-                <th style={{ padding: '12px 14px' }}>Actor</th>
-                <th style={{ padding: '12px 14px' }}>Status</th>
-                <th style={{ padding: '12px 14px' }}>Timestamp</th>
+                <th style={{ padding: '10px 14px', color: '#09090b', fontWeight: 600 }}>Event ID</th>
+                <th style={{ padding: '10px 14px', color: '#09090b', fontWeight: 600 }}>Event Type</th>
+                <th style={{ padding: '10px 14px', color: '#09090b', fontWeight: 600 }}>Correlation ID</th>
+                <th style={{ padding: '10px 14px', color: '#09090b', fontWeight: 600 }}>Analysis ID</th>
+                <th style={{ padding: '10px 14px', color: '#09090b', fontWeight: 600 }}>Actor</th>
+                <th style={{ padding: '10px 14px', color: '#09090b', fontWeight: 600 }}>Status</th>
+                <th style={{ padding: '10px 14px', color: '#09090b', fontWeight: 600 }}>Timestamp</th>
               </tr>
             </thead>
             <tbody>
               {logs.map((log, i) => (
-                <tr key={i} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '12px 14px', fontFamily: 'monospace', color: '#0369a1' }}>{log.event_id}</td>
-                  <td style={{ padding: '12px 14px' }}>
+                <tr key={i} style={{ borderBottom: '1px solid #e4e4e7', color: '#09090b' }}>
+                  <td style={{ padding: '10px 14px', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#09090b' }}>
+                    {log.event_id}
+                  </td>
+                  <td style={{ padding: '10px 14px' }}>
                     <span style={{
-                      padding: '3px 8px',
+                      padding: '2px 7px',
                       borderRadius: '4px',
                       fontSize: '11px',
-                      fontWeight: 700,
-                      background: log.event_type.includes('COMPLETED') ? '#dcfce7' : log.event_type.includes('FEEDBACK') ? '#e0e7ff' : '#f1f5f9',
-                      color: log.event_type.includes('COMPLETED') ? '#166534' : log.event_type.includes('FEEDBACK') ? '#4338ca' : '#334155'
+                      fontWeight: 600,
+                      background: log.event_type.includes('COMPLETED') ? '#09090b' : '#f4f4f5',
+                      color: log.event_type.includes('COMPLETED') ? '#ffffff' : '#09090b',
+                      border: '1px solid #d4d4d8'
                     }}>
                       {log.event_type}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 14px', fontFamily: 'monospace', fontSize: '11px', color: '#64748b' }}>
+                  <td style={{ padding: '10px 14px', fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#71717a' }}>
                     {log.correlation_id}
                   </td>
-                  <td style={{ padding: '12px 14px', fontSize: '12px' }}>{log.analysis_id || '—'}</td>
-                  <td style={{ padding: '12px 14px', fontSize: '12px' }}>{log.actor_reference?.actor_id || 'system'}</td>
-                  <td style={{ padding: '12px 14px' }}>
-                    <span style={{ color: log.component_status === 'completed' ? '#16a34a' : '#d97706', fontWeight: 600 }}>
+                  <td style={{ padding: '10px 14px', fontSize: '12px' }}>{log.analysis_id || '—'}</td>
+                  <td style={{ padding: '10px 14px', fontSize: '12px' }}>{log.actor_reference?.actor_id || 'system'}</td>
+                  <td style={{ padding: '10px 14px' }}>
+                    <span style={{
+                      background: log.component_status === 'completed' ? '#09090b' : '#f4f4f5',
+                      color: log.component_status === 'completed' ? '#ffffff' : '#09090b',
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      fontSize: '11px',
+                      fontWeight: 600
+                    }}>
                       {log.component_status}
                     </span>
                   </td>
-                  <td style={{ padding: '12px 14px', color: '#64748b', fontSize: '12px' }}>
+                  <td style={{ padding: '10px 14px', color: '#71717a', fontSize: '12px' }}>
                     {new Date(log.timestamp).toLocaleString()}
                   </td>
                 </tr>
@@ -133,21 +195,37 @@ export default function AuditLogViewer() {
           </table>
 
           {/* Pagination */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 14px', borderTop: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '13px', color: '#64748b' }}>Total audit events: {pagination.total}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 14px', borderTop: '1px solid #e4e4e7', background: '#ffffff' }}>
+            <span style={{ fontSize: '13px', color: '#71717a' }}>Total audit events: {pagination.total}</span>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 disabled={page <= 1}
                 onClick={() => setPage(p => Math.max(1, p - 1))}
-                style={{ padding: '4px 8px', border: '1px solid #cbd5e1', borderRadius: '4px', cursor: page <= 1 ? 'not-allowed' : 'pointer' }}
+                style={{
+                  padding: '4px 8px',
+                  border: '1px solid #d4d4d8',
+                  borderRadius: '4px',
+                  background: '#ffffff',
+                  color: '#09090b',
+                  cursor: page <= 1 ? 'not-allowed' : 'pointer'
+                }}
               >
                 Previous
               </button>
-              <span style={{ padding: '4px 8px', fontSize: '13px' }}>Page {page} of {pagination.pages || 1}</span>
+              <span style={{ padding: '4px 8px', fontSize: '13px', color: '#09090b' }}>
+                Page {page} of {pagination.pages || 1}
+              </span>
               <button
                 disabled={page >= pagination.pages}
                 onClick={() => setPage(p => p + 1)}
-                style={{ padding: '4px 8px', border: '1px solid #cbd5e1', borderRadius: '4px', cursor: page >= pagination.pages ? 'not-allowed' : 'pointer' }}
+                style={{
+                  padding: '4px 8px',
+                  border: '1px solid #d4d4d8',
+                  borderRadius: '4px',
+                  background: '#ffffff',
+                  color: '#09090b',
+                  cursor: page >= pagination.pages ? 'not-allowed' : 'pointer'
+                }}
               >
                 Next
               </button>
