@@ -16,7 +16,6 @@ import {
   MessageSquare,
   ExternalLink,
   Clock,
-  Lock,
   Search,
   X
 } from 'lucide-react';
@@ -126,23 +125,7 @@ export default function AnalystDashboard() {
             Incident triage, semantic retrieval, and resolution recommendation workspace.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            background: '#f4f4f5',
-            color: '#09090b',
-            padding: '5px 10px',
-            borderRadius: '6px',
-            fontSize: '12px',
-            border: '1px solid #e4e4e7',
-            fontWeight: 500
-          }}>
-            <Lock size={14} />
-            <span>Clearance: Internal</span>
-          </span>
-        </div>
+
       </div>
 
       {/* Main Grid */}

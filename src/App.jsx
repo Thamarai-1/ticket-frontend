@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   LayoutDashboard,
   Layers,
@@ -6,7 +6,9 @@ import {
   Database,
   History,
   ShieldCheck,
-  Ticket
+  Ticket,
+  LogOut,
+  Loader2
 } from 'lucide-react';
 import AnalystDashboard from './components/AnalystDashboard';
 import SimilarTickets from './components/SimilarTickets';
@@ -14,9 +16,53 @@ import TicketClassifier from './components/TicketClassifier';
 import HistoricalTickets from './components/HistoricalTickets';
 import AnalysisHistory from './components/AnalysisHistory';
 import AuditLogViewer from './components/AuditLogViewer';
+import LoginPage from './components/LoginPage';
+import axiosInstance from './services/axiosInstance';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // Check existing token on mount
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setAuthLoading(false);
+      return;
+    }
+    axiosInstance.get('/api/auth/me')
+      .then((res) => {
+        const userData = res.data.data?.user || res.data.data || res.data.user || res.data;
+        setUser(userData);
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
+        setUser(null);
+      })
+      .finally(() => {
+        setAuthLoading(false);
+      });
+  }, []);
+
+  const handleLogin = useCallback((userData, token) => {
+    setUser(userData);
+  }, []);
+
+  const handleLogout = useCallback(() => {
+    axiosInstance.post('/api/auth/logout').catch(() => {});
+    localStorage.removeItem('token');
+    setUser(null);
+  }, []);
+
+  // Listen for 401 events from axios interceptor
+  useEffect(() => {
+    const handler = () => {
+      setUser(null);
+    };
+    window.addEventListener('auth:logout', handler);
+    return () => window.removeEventListener('auth:logout', handler);
+  }, []);
 
   const navItems = [
     { id: 'dashboard', label: 'Analyst Console', icon: LayoutDashboard },
@@ -28,6 +74,27 @@ export default function App() {
   ];
 
   const currentNav = navItems.find(item => item.id === activeTab) || navItems[0];
+
+  // Show loading spinner while checking auth
+  if (authLoading) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#ffffff'
+      }}>
+        <Loader2 size={24} color="#09090b" style={{ animation: 'spin 1s linear infinite' }} />
+        <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  // Show login page if not authenticated
+  if (!user) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
 
   return (
     <div className="app-layout">
@@ -82,6 +149,66 @@ export default function App() {
               );
             })}
           </nav>
+        </div>
+
+        {/* Sidebar Footer - User & Logout */}
+        <div className="sidebar-footer">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{
+                fontSize: '13px',
+                fontWeight: 600,
+                color: '#09090b',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}>
+                {user.name || user.email}
+              </div>
+              {user.name && (
+                <div style={{
+                  fontSize: '11px',
+                  color: '#71717a',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {user.email}
+                </div>
+              )}
+            </div>
+            <button
+              onClick={handleLogout}
+              title="Sign out"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '6px',
+                borderRadius: '6px',
+                color: '#71717a',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                transition: 'all 0.15s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#f4f4f5';
+                e.currentTarget.style.color = '#09090b';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'none';
+                e.currentTarget.style.color = '#71717a';
+              }}
+            >
+              <LogOut size={16} />
+            </button>
+          </div>
         </div>
       </aside>
 

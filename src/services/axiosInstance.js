@@ -34,7 +34,7 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response Interceptor: telemetry and logging in development
+// Response Interceptor: handle 401 auto-logout, telemetry and logging
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;
@@ -42,6 +42,14 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response) {
       const { status, data } = error.response;
+
+      // Auto-logout on 401 (skip for login/register requests)
+      const url = error.config?.url || '';
+      if (status === 401 && !url.includes('/auth/login') && !url.includes('/auth/register')) {
+        localStorage.removeItem('token');
+        window.dispatchEvent(new Event('auth:logout'));
+      }
+
       if (import.meta.env.DEV) {
         console.warn(`[Axios API Error ${status}]:`, error.config?.url, data);
       }
